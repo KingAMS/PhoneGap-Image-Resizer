@@ -340,15 +340,7 @@ public class ImageResizePlugin extends CordovaPlugin {
         public void run() {
             try {
                 BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                getBitmap(imageData, imageDataType, options);
-                float[] sizes = calculateFactors(params, options.outWidth, options.outHeight);
-                float reqWidth = options.outWidth * sizes[0];
-                float reqHeight = options.outHeight * sizes[1];
-                int inSampleSize = calculateInSampleSize(options, (int)reqWidth, (int)reqHeight);
-        
-                options = new BitmapFactory.Options();
-                options.inSampleSize = inSampleSize;
+                
                 Bitmap bmp = getBitmap(imageData, imageDataType, options);
                 if (bmp == null) {
                     throw new IOException("The image file could not be opened.");
