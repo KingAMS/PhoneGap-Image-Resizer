@@ -1,7 +1,7 @@
 /**
  * An Image Resizer Plugin for Cordova/PhoneGap.
  * 
- * More Information : https://github.com/raananw/
+ * More Information : https://github.com/nihao/
  * 
  * The android version of the file stores the images using the local storage.
  * 
@@ -10,7 +10,7 @@
  * 
  * @author Raanan Weber, webXells GmbH, http://www.webxells.com
  */
-package com.raananw;
+package com.nihao;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
