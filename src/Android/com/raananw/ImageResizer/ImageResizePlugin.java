@@ -57,7 +57,7 @@ public class ImageResizePlugin extends CordovaPlugin {
             ResizeImage resizeImage = new ResizeImage(params, callbackContext);
             cordova.getThreadPool().execute(resizeImage);
             return true;
-        } elseif (action.equals("cropImage")) {
+        } else if (action.equals("cropImage")) {
             CropImage cropImage = new CropImage(params, callbackContext);
             cordova.getThreadPool().execute(cropImage);
             return true;
