@@ -73,6 +73,53 @@ ImageResizer.prototype.resizeImage = function(success, fail, imageData, width, h
     return cordova.exec(success, fail, "ImageResizePlugin", "resizeImage", [params]);
 };
 
+
+/**
+ * Crop an image
+ * @param success - success callback, will receive the data sent from the native plugin
+ * @param fail - error callback, will receive an error string describing what went wrong
+ * @param imageData - The image data, either base64 or local url
+ * @param width - width factor / width in pixels (if one of height/width is 0, will resize to fit to the other while keeping aspect ratio)
+ * @param height - height factor / height in pixels
+ * @param x - start Crop from X
+ * @param y - start Crop from Y
+ * @param options extra options -
+ *              format : file format to use (ImageResizer.FORMAT_JPG/ImageResizer.FORMAT_PNG) - defaults to JPG
+ *              imageDataType : the data type (IMAGE_DATA_TYPE_URL/IMAGE_DATA_TYPE_BASE64) - defaults to URL
+ *              quality : INTEGER, compression quality - defaults to 75
+ * @returns JSON Object with the following parameters:
+ *              imageData : Base64 of the resized image || OR filename if storeImage = true
+ *              height : height of the resized image
+ *              width: width of the resized image
+ */
+ImageResizer.prototype.cropImage = function(success, fail, imageData, width, height, x, y, options) {
+    var fileFormat, supportedFormats = ['jpg', 'jpeg', 'png'];
+    if (!options) {
+        options = {};
+    }
+
+    var params = {
+        data: imageData,
+        width: width ? width : 0,
+        height: height ? height : 0,
+        x: x ? x : 0,
+        y: y ? y : 0,
+        format: options.format ? options.format : ImageResizer.FORMAT_JPG,
+        imageDataType: options.imageDataType ? options.imageDataType : ImageResizer.IMAGE_DATA_TYPE_URL,
+        quality: options.quality ? options.quality : 75,
+    }
+
+    if (params.filename && params.filename.indexOf('.') > -1) {
+        fileFormat = params.filename.substring(params.filename.lastIndexOf('.') + 1, params.filename.length);
+        if (supportedFormats.indexOf(fileFormat.toLowerCase())) {
+            params.format = fileFormat.toLowerCase();
+        }
+    }
+    return cordova.exec(success, fail, "ImageResizePlugin", "cropImage", [params]);
+};
+
+
+
 /**
  * Get an image width and height
  * @param success success callback, will receive the data sent from the native plugin

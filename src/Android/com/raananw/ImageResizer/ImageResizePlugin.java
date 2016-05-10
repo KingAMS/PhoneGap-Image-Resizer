@@ -57,6 +57,10 @@ public class ImageResizePlugin extends CordovaPlugin {
             ResizeImage resizeImage = new ResizeImage(params, callbackContext);
             cordova.getThreadPool().execute(resizeImage);
             return true;
+        } elseif (action.equals("cropImage")) {
+            CropImage cropImage = new CropImage(params, callbackContext);
+            cordova.getThreadPool().execute(cropImage);
+            return true;
         } else if (action.equals("imageSize")) {
             GetImageSize imageSize = new GetImageSize(params, callbackContext);
             cordova.getThreadPool().execute(imageSize);
@@ -325,5 +329,67 @@ public class ImageResizePlugin extends CordovaPlugin {
             float[] sizes = {widthFactor, heightFactor};
             return sizes;
         }
+    }
+	
+	private class CropImage extends ImageTools implements Runnable {
+        public CropImage(JSONObject params, CallbackContext callbackContext) throws JSONException {
+            super(params, callbackContext);
+        }
+        
+        @Override
+        public void run() {
+            try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                getBitmap(imageData, imageDataType, options);
+                float[] sizes = calculateFactors(params, options.outWidth, options.outHeight);
+                float reqWidth = options.outWidth * sizes[0];
+                float reqHeight = options.outHeight * sizes[1];
+                int inSampleSize = calculateInSampleSize(options, (int)reqWidth, (int)reqHeight);
+        
+                options = new BitmapFactory.Options();
+                options.inSampleSize = inSampleSize;
+                Bitmap bmp = getBitmap(imageData, imageDataType, options);
+                if (bmp == null) {
+                    throw new IOException("The image file could not be opened.");
+                }
+                
+				float desiredWidth = (float)params.getDouble("width");
+				float desiredHeight = (float)params.getDouble("height");
+				float x = (float)params.getDouble("x");
+				float y = (float)params.getDouble("y");
+				
+				bmp = Bitmap.createBitmap(bmp, x, y,desiredWidth, desiredHeight);
+                        
+               
+                int quality = params.getInt("quality");
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                if (format.equals(FORMAT_PNG)) {
+                    bmp.compress(Bitmap.CompressFormat.PNG, quality, baos);
+                } else {
+                    bmp.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+                }
+                byte[] b = baos.toByteArray();
+                String returnString = Base64.encodeToString(b, Base64.NO_WRAP);
+                // return object
+                JSONObject res = new JSONObject();
+                res.put("imageData", returnString);
+                res.put("width", bmp.getWidth());
+                res.put("height", bmp.getHeight());
+                callbackContext.success(res);
+                
+            } catch (JSONException e) {
+                Log.d("PLUGIN", e.getMessage());
+                callbackContext.error(e.getMessage());
+            } catch (IOException e) {
+                Log.d("PLUGIN", e.getMessage());
+                callbackContext.error(e.getMessage());
+            } catch (URISyntaxException e) {
+                Log.d("PLUGIN", e.getMessage());
+                callbackContext.error(e.getMessage());
+            }
+        }
+        
+        
     }
 }
