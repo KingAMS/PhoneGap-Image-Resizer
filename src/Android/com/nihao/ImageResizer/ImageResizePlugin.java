@@ -346,10 +346,10 @@ public class ImageResizePlugin extends CordovaPlugin {
                     throw new IOException("The image file could not be opened.");
                 }
                 
-				float desiredWidth = (float)params.getDouble("width");
-				float desiredHeight = (float)params.getDouble("height");
-				float x = (float)params.getDouble("x");
-				float y = (float)params.getDouble("y");
+				int desiredWidth = (int)params.getInt("width");
+				int desiredHeight = (int)params.getInt("height");
+				int x = (int)params.getInt("x");
+				int y = (int)params.getInt("y");
 				
 				bmp = Bitmap.createBitmap(bmp, x, y,desiredWidth, desiredHeight);
                         
